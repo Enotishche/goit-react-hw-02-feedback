@@ -10,26 +10,24 @@ class Feedback extends Component {
     neutral: 0,
     bad: 0,
   };
-  leaveFeedback = propertyName => {
-    this.setState(prevState => {
-      const value = prevState[propertyName];
-      return {
-        [propertyName]: value + 1,
-      };
+
+  leaveFeedback = e => {
+    const { name } = e.currentTarget;
+    this.setState({
+      [name]: this.state[name] + 1,
     });
   };
+
   countTotalFeedback = () => {
     const { good, neutral, bad } = this.state;
     return good + neutral + bad;
   };
   countPositiveFeedbackPercentage = () => {
     const total = this.countTotalFeedback();
-    if (!total) {
-      return 0;
-    }
-    const value = this.state.good;
-    const result = (value / total) * 100;
-    return Number(result.toFixed(2));
+
+    const { good } = this.state;
+    const positive = (good / total) * 100;
+    return Math.round(positive) || 0;
   };
 
   render() {
@@ -39,8 +37,12 @@ class Feedback extends Component {
     return (
       <div>
         <Section title="Please leave feedback">
-          <FeedbackOptions leaveFeedback={this.leaveFeedback} />
+          <FeedbackOptions
+            options={Object.keys(this.state)}
+            leaveFeedback={this.leaveFeedback}
+          />
         </Section>
+
         {!total ? (
           <Notification message="There is no feedback"></Notification>
         ) : (
